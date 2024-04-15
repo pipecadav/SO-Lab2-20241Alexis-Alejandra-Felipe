@@ -12,16 +12,45 @@
 
 char error_message[30] = "An error has occurred\n";
 
+/**
+ * Imprime un mensaje de error estandarizado en el canal de error estándar.
+ */
 void print_error() {
     write(STDERR_FILENO, error_message, strlen(error_message));
 }
 
+/**
+ * Procesa el comando proporcionado por el usuario, dividiéndolo en argumentos y determinando
+ * si debe ejecutar un comando integrado o un programa externo.
+ */
 void process_command(char *cmd, char **path);
+
+/**
+ * Ejecuta un comando externo utilizando fork y execv. La ejecución puede ser en primer plano o fondo
+ * dependiendo de si el comando está seguido por '&'.
+ */
 void run_command(char **args, char **path, int background);
+
+/**
+ * Determina si un comando es un comando integrado del shell.
+ * Retorna 1 si es un comando integrado, 0 si no lo es.
+ */
 int is_builtin_command(char **args);
+
+/**
+ * Ejecuta un comando integrado del shell, como 'exit', 'cd', o 'path'.
+ */
 void execute_builtin_command(char **args, char **path);
-void set_path(char **args, char **path);
+
+/**
+ * Cambia el directorio actual del proceso al especificado en los argumentos del comando 'cd'.
+ */
 void change_directory(char **args);
+
+/**
+ * Establece el path de búsqueda de ejecutables a los directorios especificados en los argumentos del comando 'path'.
+ */
+void set_path(char **args, char **path);
 
 int main(int argc, char *argv[]) {
     char *cmd = NULL;
@@ -128,6 +157,10 @@ int is_builtin_command(char **args) {
 
 void execute_builtin_command(char **args, char **path) {
     if (strcmp(args[0], "exit") == 0) {
+        if (args[1] != NULL) {
+            print_error();
+            return;
+        }    
         exit(0);
     } else if (strcmp(args[0], "cd") == 0) {
         change_directory(args);
