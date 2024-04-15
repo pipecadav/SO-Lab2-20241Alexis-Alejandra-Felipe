@@ -8,6 +8,7 @@
 
 #define MAX_LINE 1024
 #define MAX_ARGS 128
+#define WHITESPACE " \t\n"
 
 char error_message[30] = "An error has occurred\n";
 
@@ -18,7 +19,7 @@ void print_error() {
 void process_command(char *cmd, char **path);
 void run_command(char **args, char **path, int background);
 int is_builtin_command(char **args);
-void execute_builtin_command(char **args);
+void execute_builtin_command(char **args, char **path);
 void set_path(char **args, char **path);
 void change_directory(char **args);
 
@@ -90,7 +91,7 @@ void process_command(char *cmd, char **path) {
     if (!is_builtin_command(args)) {
         run_command(args, path, background);
     } else {
-        execute_builtin_command(args);
+        execute_builtin_command(args, path);
     }
 }
 
@@ -125,7 +126,7 @@ int is_builtin_command(char **args) {
     return 0;
 }
 
-void execute_builtin_command(char **args) {
+void execute_builtin_command(char **args, char **path) {
     if (strcmp(args[0], "exit") == 0) {
         exit(0);
     } else if (strcmp(args[0], "cd") == 0) {
